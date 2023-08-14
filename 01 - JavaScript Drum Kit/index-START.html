@@ -62,13 +62,47 @@
                 const audio = document.querySelector(
                     `audio[data-key="${e.code}"]`
                 );
-                console.log(audio);
                 if (!audio) return;
+                const key = document.querySelector(
+                    `.key[data-key="${e.code}"]`
+                );
+
+                // Experiment:
+                let computedStyle = window.getComputedStyle(key);
+                let transformValue =
+                    computedStyle.getPropertyValue("transform");
+                console.log(`Property value of transform is ${transformValue}`);
 
                 // Rewind audio so you can play it multiple times in a row
                 audio.currentTime = 0;
                 audio.play();
+                key.classList.add("playing");
+
+                // Experiment Part 2:
+                computedStyle = window.getComputedStyle(key);
+                transformValue = computedStyle.getPropertyValue("transform");
+                console.log(`Property value of transform is ${transformValue}`)
+
+
             });
+
+
+            // Many properties transition but only care about transform coz it's longest
+            // "this" is what was called aka "key" ; see keys.forEach etc.
+
+            function removeTransition(e) {
+                if (e.propertyName !== "transform") return;
+                this.style.transitionDuration = "0s"; // To override 1.07s transition
+                this.classList.remove("playing");
+            }
+
+            // Add event listener to remove transition, instead of setting delay
+            // Setting delay may cause problems coz already of transition delay in CSS
+
+            const keys = document.querySelectorAll(".key");
+            keys.forEach((key) =>
+                key.addEventListener("transitionend", removeTransition)
+            );
         </script>
     </body>
 </html>
